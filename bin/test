@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# Script para ejecutar tests con Docker PostgreSQL
+set -e
+
+echo "🚀 Configurando entorno de test con Docker..."
+
+# Asegurar que Docker esté corriendo
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ Docker no está corriendo. Por favor inicia Docker y vuelve a intentar."
+  exit 1
+fi
+
+# Variables de entorno para test
+export RAILS_ENV=test
+export DATABASE_HOST=localhost
+export DATABASE_USERNAME=postgres
+export DATABASE_PASSWORD=postgres
+
+# Verificar si el contenedor de PostgreSQL está corriendo
+if ! docker ps | grep -q "postgres:16"; then
+  echo "📦 Iniciando contenedor de PostgreSQL..."
+  docker compose up -d db
+
+  # Esperar a que PostgreSQL esté listo
+  echo "⏳ Esperando a que PostgreSQL esté listo..."
+  until docker compose exec -T db pg_isready -U postgres; do
+    sleep 1
+  done
+  echo "✅ PostgreSQL está listo!"
+else
+  echo "✅ Contenedor de PostgreSQL ya está corriendo"
+fi
+
+# Crear y configurar la base de datos de test
+echo "🗄️  Configurando base de datos de test..."
+bundle exec rails db:create RAILS_ENV=test
+bundle exec rails db:migrate RAILS_ENV=test
+
+# Ejecutar los tests
+echo "🧪 Ejecutando tests..."
+bundle exec rspec "$@"
+
+echo "✅ Tests completados!"

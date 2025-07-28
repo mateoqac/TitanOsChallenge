@@ -1,4 +1,4 @@
-class SearchService
+class SearchService < BaseService
   def self.global_search(query, country_code)
     return {} if query.blank?
 
@@ -8,23 +8,17 @@ class SearchService
     }
   end
 
-  def self.available_countries
-    Country.active.pluck(:code)
-  end
-
   private
 
   def self.search_contents(query, country_code)
-    country = Country.find_by(code: country_code)
-    return [] unless country
+    valid, country = validate_country_exists(country_code)
+    return [] unless valid
 
-    # Buscar por título
     title_results = Content.joins(:availabilities)
                           .where(availabilities: { country: country })
                           .where("contents.title ILIKE ?", "%#{query}%")
                           .distinct
 
-    # Buscar por año (si query es numérico)
     year_results = []
     if query.match?(/^\d{4}$/)
       year_results = Content.joins(:availabilities)
@@ -33,21 +27,19 @@ class SearchService
                            .distinct
     end
 
-    # Combinar y eliminar duplicados
     all_results = (title_results + year_results).uniq
-    all_results.map(&:as_json_for_api)
+    all_results
   end
 
   def self.search_streaming_apps(query, country_code)
-    country = Country.find_by(code: country_code)
-    return [] unless country
+    valid, country = validate_country_exists(country_code)
+    return [] unless valid
 
-    # Buscar apps por nombre que tengan contenidos en el país
     apps = StreamingApp.joins(availabilities: :country)
                        .where(countries: { code: country_code })
                        .where("streaming_apps.name ILIKE ?", "%#{query}%")
                        .distinct
 
-    apps.map { |app| app.as_json_for_search(country_code) }
+    apps
   end
 end

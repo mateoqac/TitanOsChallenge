@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Script simple para ejecutar tests (asume que Docker ya está corriendo)
+set -e
+
+echo "🧪 Ejecutando tests..."
+
+# Variables de entorno para test
+export RAILS_ENV=test
+export DATABASE_HOST=localhost
+export DATABASE_USERNAME=postgres
+export DATABASE_PASSWORD=postgres
+
+# Ejecutar los tests
+bundle exec rspec "$@"
+
+echo "✅ Tests completados!"

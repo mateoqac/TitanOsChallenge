@@ -14,7 +14,7 @@ RSpec.describe "Api::V1::Search", type: :request do
   describe "GET /api/v1/search" do
     context "with valid parameters" do
       it "searches by title" do
-        get "/api/v1/search", params: { country: 'es', q: 'star' }
+        get "/api/v1/search", params: { country: 'ES', q: 'star' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -24,7 +24,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "searches by year" do
-        get "/api/v1/search", params: { country: 'es', q: '1980' }
+        get "/api/v1/search", params: { country: 'ES', q: '1980' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -34,7 +34,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "searches by streaming app name" do
-        get "/api/v1/search", params: { country: 'es', q: 'netflix' }
+        get "/api/v1/search", params: { country: 'ES', q: 'netflix' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -44,7 +44,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "returns both contents and apps when query matches both" do
-        get "/api/v1/search", params: { country: 'es', q: 'star' }
+        get "/api/v1/search", params: { country: 'ES', q: 'star' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "returns empty results when no matches found" do
-        get "/api/v1/search", params: { country: 'es', q: 'nonexistent' }
+        get "/api/v1/search", params: { country: 'ES', q: 'nonexistent' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -81,7 +81,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "returns error for missing query" do
-        get "/api/v1/search", params: { country: 'es' }
+        get "/api/v1/search", params: { country: 'ES' }
 
         expect(response).to have_http_status(:bad_request)
         json_response = JSON.parse(response.body)
@@ -89,7 +89,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "returns error for empty query" do
-        get "/api/v1/search", params: { country: 'es', q: '' }
+        get "/api/v1/search", params: { country: 'ES', q: '' }
 
         expect(response).to have_http_status(:bad_request)
         json_response = JSON.parse(response.body)
@@ -99,7 +99,7 @@ RSpec.describe "Api::V1::Search", type: :request do
 
     context "case insensitive search" do
       it "finds content regardless of case" do
-        get "/api/v1/search", params: { country: 'es', q: 'STAR' }
+        get "/api/v1/search", params: { country: 'ES', q: 'STAR' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -109,7 +109,7 @@ RSpec.describe "Api::V1::Search", type: :request do
       end
 
       it "finds apps regardless of case" do
-        get "/api/v1/search", params: { country: 'es', q: 'NETFLIX' }
+        get "/api/v1/search", params: { country: 'ES', q: 'NETFLIX' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)

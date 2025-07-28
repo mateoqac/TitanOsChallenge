@@ -1,8 +1,11 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
+# check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t my-app .
-# docker run -d -p 80:80 -p 443:443 --name my-app -e RAILS_MASTER_KEY=<value from config/master.key> my-app
+# docker build -t sequra_challenge .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name sequra_challenge sequra_challenge
+
+# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.4
@@ -16,21 +19,21 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
-ENV RAILS_ENV="production" \
+# Set development environment defaults
+ENV RAILS_ENV="development" \
     BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_PATH="/usr/local/bundle"
+# No BUNDLE_WITHOUT needed for development, install all gems
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install -y libyaml-dev --no-install-recommends -y build-essential git libpq-dev pkg-config && \
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install application gems
+# Install application gems (including development gems)
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
@@ -41,7 +44,6 @@ COPY . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
-
 
 # Final stage for app image
 FROM base
@@ -56,9 +58,10 @@ RUN groupadd --system --gid 1000 rails && \
     chown -R rails:rails db log storage tmp
 USER 1000:1000
 
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+# Entrypoint commented out for development, rely on docker-compose command
+# ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start the server by default, this can be overwritten at runtime
+# Expose Rails default port
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+# Default command to start Rails server (can be overridden by docker-compose)
+CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]

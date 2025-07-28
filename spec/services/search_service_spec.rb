@@ -10,22 +10,22 @@ RSpec.describe SearchService, type: :service do
   end
 
   it 'searches by title' do
-    result = SearchService.global_search('star', 'es')
+    result = SearchService.global_search('star', 'ES')
     expect(result[:contents].map { |c| c[:title] || c['title'] }).to include('Star Wars')
   end
 
   it 'searches by year' do
-    result = SearchService.global_search('1980', 'es')
+    result = SearchService.global_search('1980', 'ES')
     expect(result[:contents].map { |c| c[:year] || c['year'] }).to include(1980)
   end
 
   it 'searches by app name' do
-    result = SearchService.global_search('netflix', 'es')
+    result = SearchService.global_search('netflix', 'ES')
     expect(result[:streaming_apps].map { |a| a[:name] || a['name'] }).to include('Netflix')
   end
 
   it 'returns empty for no matches' do
-    result = SearchService.global_search('nope', 'es')
+    result = SearchService.global_search('nope', 'ES')
     expect(result[:contents]).to be_empty
     expect(result[:streaming_apps]).to be_empty
   end

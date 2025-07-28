@@ -35,6 +35,9 @@ gem "thruster", require: false
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
 
+# Use Active Model Serializers for JSON API responses
+gem 'active_model_serializers', '~> 0.10.0'
+
 
 gem 'dotenv-rails'
 

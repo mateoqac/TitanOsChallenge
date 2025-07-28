@@ -2,11 +2,10 @@ class DataImportService
   def self.import_from_json(file_path)
     data = JSON.parse(File.read(file_path))
 
-    # Extraer países únicos de availabilities
     countries = extract_countries_from_data(data)
     countries.each { |country_data| create_or_update_country(country_data) }
 
-    # Importar contenidos
+
     import_contents(data)
   end
 
@@ -21,14 +20,12 @@ class DataImportService
           countries.add(availability['market'])
         end
 
-        # Para tv_shows, revisar seasons también
         content['seasons']&.each do |season|
           season['availabilities']&.each do |availability|
             countries.add(availability['market'])
           end
         end
 
-        # Para channels, revisar channel_programs
         content['channel_programs']&.each do |program|
           program['availabilities']&.each do |availability|
             countries.add(availability['market'])
@@ -42,8 +39,8 @@ class DataImportService
 
   def self.country_name_from_code(code)
     case code
-    when 'gb' then 'United Kingdom'
-    when 'es' then 'Spain'
+    when 'GB' then 'United Kingdom'
+    when 'ES' then 'Spain'
     else code.upcase
     end
   end
@@ -56,13 +53,10 @@ class DataImportService
   end
 
   def self.import_contents(data)
-    # Importar movies
     data['movies']&.each { |movie_data| create_movie(movie_data) }
 
-    # Importar tv_shows
     data['tv_shows']&.each { |tv_show_data| create_tv_show(tv_show_data) }
 
-    # Importar channels
     data['channels']&.each { |channel_data| create_channel(channel_data) }
   end
 
@@ -87,10 +81,8 @@ class DataImportService
 
     create_availabilities(tv_show, tv_show_data['availabilities'])
 
-    # Crear seasons
     tv_show_data['seasons']&.each { |season_data| create_season(season_data, tv_show) }
 
-    # Crear episodes
     tv_show_data['episodes']&.each { |episode_data| create_episode(episode_data, tv_show) }
   end
 
@@ -132,7 +124,6 @@ class DataImportService
 
     create_availabilities(channel, channel_data['availabilities'])
 
-    # Crear channel programs
     channel_data['channel_programs']&.each { |program_data| create_channel_program(program_data, channel) }
   end
 

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :country do
-    sequence(:code) { |n| "c#{n}" }
+    sequence(:code) { |n| "C#{n}" }
     sequence(:name) { |n| "Country #{n}" }
     active { true }
 
@@ -9,12 +9,12 @@ FactoryBot.define do
     end
 
     trait :spain do
-      code { 'es' }
+      code { 'ES' }
       name { 'Spain' }
     end
 
     trait :uk do
-      code { 'gb' }
+      code { 'GB' }
       name { 'United Kingdom' }
     end
   end

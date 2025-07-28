@@ -1,13 +1,12 @@
 class Api::V1::SearchController < ApplicationController
+  include CountryValidatable
+
   def index
-    country_code = params[:country]
+    country_code = params[:country]&.upcase
     query = params[:q]
 
     unless valid_country_code?(country_code)
-      return render json: {
-        error: 'Invalid country code',
-        available_countries: SearchService.available_countries
-      }, status: :bad_request
+      return render_invalid_country_error
     end
 
     unless query.present?
@@ -15,13 +14,11 @@ class Api::V1::SearchController < ApplicationController
     end
 
     results = SearchService.global_search(query, country_code)
-    render json: results
-  end
 
-  private
-
-  def valid_country_code?(code)
-    return false if code.blank?
-    Country.exists?(code: code, active: true)
+    # Renderizar con scope para el country_code
+    render json: {
+      contents: results[:contents],
+      streaming_apps: results[:streaming_apps]
+    }, scope: { country_code: country_code }
   end
 end

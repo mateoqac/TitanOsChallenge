@@ -1,53 +1,58 @@
 version: '3.8'
 
 services:
-  # Base de datos PostgreSQL
   db:
-    image: postgres:15
-    container_name: challenge_titan_os_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: challenge_titan_os_development
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+    image: postgres:16 # Puedes ajustar la versión de PostgreSQL si es necesario
     ports:
-      - "5432:5432"
+      - "5432:5432" # Exponer el puerto de PostgreSQL
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - challenge_titan_os_network
-
-  # Aplicación Rails
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: challenge_titan_os_web
-    restart: unless-stopped
     environment:
-      RAILS_ENV: development
-      DATABASE_URL: postgresql://postgres:password@db:5432/challenge_titan_os_development
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      RAILS_MAX_THREADS: 5
-      WEB_CONCURRENCY: 2
-    ports:
-      - "3000:3000"
+      # Lee las variables desde el archivo .env local o usa los defaults
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+    networks:
+      - default
+
+  app:
+    build: .
+    command: bundle exec rails s -p 3000 -b '0.0.0.0' # Ejecuta el servidor Rails en modo desarrollo
     volumes:
-      - .:/rails
-      - bundle_cache:/usr/local/bundle
+      - .:/rails # Monta el código local en el contenedor
+      - bundle_cache:/usr/local/bundle # Persiste las gemas instaladas
+      # Si usas node_modules, descomenta la siguiente línea:
+      # - node_modules_cache:/rails/node_modules
+    ports:
+      - "3000:3000" # Expone el puerto de Rails al host
     depends_on:
       - db
+    environment:
+      RAILS_ENV: development # Importante: establece el entorno a desarrollo
+      DATABASE_HOST: db # El nombre del servicio de la base de datos
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres} # Usa el valor de .env
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-postgres} # Usa el valor de .env
+      # DATABASE_PORT no es necesario si usas el puerto default de postgres (5432) dentro de la red docker
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY} # Asegúrate de que esta variable esté en tu archivo .env
+      # Descomenta si necesitas las gemas de development/test en el contenedor en ejecución
+      # BUNDLE_WITHOUT: ""
     networks:
-      - challenge_titan_os_network
-    command: ./bin/dev
+      - default
+    # Añadido para asegurar que los comandos se ejecuten después de que la BD esté lista
+    # Requiere agregar 'healthcheck' al servicio 'db', pero es más complejo.
+    # Por ahora, confiaremos en depends_on y en ejecutar db:setup manualmente.
 
 volumes:
-  postgres_data:
-    driver: local
+  postgres_data: # Volumen para persistir los datos de PostgreSQL
   bundle_cache:
-    driver: local
+    # Volumen para el caché de Bundler
+    # Si usas node_modules, descomenta la siguiente línea:
+    # node_modules_cache:
 
 networks:
-  challenge_titan_os_network:
+  default:
     driver: bridge
+
+# Nota: Docker Compose leerá automáticamente las variables del archivo .env
+# en el mismo directorio donde ejecutes `docker compose up`.
+# Asegúrate de tener las variables DATABASE_USERNAME, DATABASE_PASSWORD,
+# y RAILS_MASTER_KEY definidas en tu archivo .env.

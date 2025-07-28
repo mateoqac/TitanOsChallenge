@@ -7,7 +7,7 @@ class Api::V1::FavoritesController < ApplicationController
     end
 
     favorites = FavoriteService.get_favorite_channel_programs(user_id)
-    render json: favorites
+    render json: favorites, scope: { user_id: user_id }
   end
 
   def apps

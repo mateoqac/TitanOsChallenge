@@ -12,12 +12,12 @@ RSpec.describe ContentFilterService, type: :service do
   end
 
   it 'filters by country code' do
-    result = ContentFilterService.get_available_content('es')
+    result = ContentFilterService.get_available_content('ES')
     expect(result).to include(movie, tv_show)
   end
 
   it 'filters by country and type' do
-    result = ContentFilterService.get_available_content('es', 'Movie')
+    result = ContentFilterService.get_available_content('ES', 'Movie')
     expect(result).to include(movie)
     expect(result).not_to include(tv_show)
   end

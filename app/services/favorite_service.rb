@@ -2,13 +2,11 @@ class FavoriteService
   def self.get_favorite_channel_programs(user_id)
     UserFavorite.favorite_channel_programs_for_user(user_id)
                 .map(&:favoritable)
-                .map(&:as_json_for_api)
   end
 
   def self.get_favorite_apps(user_id)
     UserFavorite.favorite_apps_for_user(user_id)
                 .map(&:favoritable)
-                .map { |app| app.as_json_for_search }
   end
 
   def self.add_app_favorite(user_id, app_id, position)

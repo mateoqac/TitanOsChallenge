@@ -1,0 +1,2 @@
+class MovieSerializer < ContentSerializer
+end

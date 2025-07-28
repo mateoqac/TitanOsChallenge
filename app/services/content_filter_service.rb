@@ -1,7 +1,7 @@
-class ContentFilterService
+class ContentFilterService < BaseService
   def self.get_available_content(country_code, type = nil)
-    country = Country.find_by(code: country_code)
-    return Content.none unless country
+    valid, country = validate_country_exists(country_code)
+    return Content.none unless valid
 
     contents = Content.joins(:availabilities)
                       .where(availabilities: { country: country })

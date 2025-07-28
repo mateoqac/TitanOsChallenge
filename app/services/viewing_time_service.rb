@@ -19,12 +19,10 @@ class ViewingTimeService
   end
 
   def self.get_favorite_programs_by_watch_time(user_id)
-    # Obtener programas de canal ordenados por tiempo de visualización
     Content.joins(:viewing_times)
            .where(type: 'ChannelProgram')
            .where(viewing_times: { user_id: user_id })
            .group('contents.id')
            .order('SUM(viewing_times.time_watched) DESC')
-           .map(&:as_json_for_api)
   end
 end

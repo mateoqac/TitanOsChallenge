@@ -16,7 +16,7 @@ RSpec.describe "Api::V1::Contents", type: :request do
   describe "GET /api/v1/contents" do
     context "with valid country code" do
       it "returns all contents for the country" do
-        get "/api/v1/contents", params: { country: 'es' }
+        get "/api/v1/contents", params: { country: 'ES' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -25,7 +25,7 @@ RSpec.describe "Api::V1::Contents", type: :request do
       end
 
       it "filters by content type" do
-        get "/api/v1/contents", params: { country: 'es', type: 'Movie' }
+        get "/api/v1/contents", params: { country: 'ES', type: 'Movie' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
@@ -34,7 +34,7 @@ RSpec.describe "Api::V1::Contents", type: :request do
       end
 
       it "returns empty array for non-existent content type" do
-        get "/api/v1/contents", params: { country: 'es', type: 'NonExistent' }
+        get "/api/v1/contents", params: { country: 'ES', type: 'NonExistent' }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)

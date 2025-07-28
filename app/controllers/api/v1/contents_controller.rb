@@ -1,12 +1,11 @@
 class Api::V1::ContentsController < ApplicationController
+  include CountryValidatable
+
   def index
-    country_code = params[:country]
+    country_code = params[:country]&.upcase
 
     unless valid_country_code?(country_code)
-      return render json: {
-        error: 'Invalid country code',
-        available_countries: ContentFilterService.available_countries
-      }, status: :bad_request
+      return render_invalid_country_error
     end
 
     contents = ContentFilterService.get_available_content(
@@ -14,28 +13,15 @@ class Api::V1::ContentsController < ApplicationController
       params[:type]
     )
 
-    render json: contents.map(&:as_json_for_api)
+    render json: contents
   end
 
   def show
     content = Content.find(params[:id])
     user_id = params[:user_id]
 
-    json_response = case content.type
-    when 'ChannelProgram'
-      viewing_time = user_id ? ViewingTimeService.get_time_watched(user_id, content.id) : nil
-      content.as_json_for_channel_program(user_id, viewing_time)
-    else
-      content.as_json_for_api
-    end
+    serializer = SerializerFactory.create_serializer(content, { user_id: user_id })
 
-    render json: json_response
-  end
-
-  private
-
-  def valid_country_code?(code)
-    return false if code.blank?
-    Country.exists?(code: code, active: true)
+    render json: serializer.as_json
   end
 end

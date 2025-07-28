@@ -18,10 +18,11 @@ RSpec.describe Content, type: :model do
   it { should have_many(:episodes).class_name('Content') }
   it { should have_many(:channel_programs).class_name('Content') }
 
-  describe '#as_json_for_api' do
+  describe 'serialization' do
     let(:content) { create(:content, :movie) }
-    it 'returns a hash with expected keys' do
-      json = content.as_json_for_api
+    it 'can be serialized with ActiveModel::Serializer' do
+      serializer = ContentSerializer.new(content)
+      json = serializer.as_json
       expect(json).to include(:id, :title, :type, :availabilities)
     end
   end
