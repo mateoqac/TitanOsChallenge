@@ -1,11 +1,11 @@
 class SerializerFactory
   SERIALIZER_MAPPING = {
-    'Movie' => MovieSerializer,
-    'TvShow' => TvShowSerializer,
-    'Season' => SeasonSerializer,
-    'Episode' => EpisodeSerializer,
-    'Channel' => ChannelSerializer,
-    'ChannelProgram' => ChannelProgramSerializer
+    "Movie" => MovieSerializer,
+    "TvShow" => TvShowSerializer,
+    "Season" => SeasonSerializer,
+    "Episode" => EpisodeSerializer,
+    "Channel" => ChannelSerializer,
+    "ChannelProgram" => ChannelProgramSerializer
   }.freeze
 
   def self.get_serializer_class(content_type)

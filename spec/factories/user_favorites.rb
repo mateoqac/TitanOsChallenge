@@ -5,7 +5,7 @@ FactoryBot.define do
     position { 1 }
 
     trait :for_content do
-      association :favoritable, factory: [:content, :channel_program]
+      association :favoritable, factory: [ :content, :channel_program ]
     end
   end
 end

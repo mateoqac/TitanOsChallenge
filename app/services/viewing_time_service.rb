@@ -20,9 +20,9 @@ class ViewingTimeService
 
   def self.get_favorite_programs_by_watch_time(user_id)
     Content.joins(:viewing_times)
-           .where(type: 'ChannelProgram')
+           .where(type: "ChannelProgram")
            .where(viewing_times: { user_id: user_id })
-           .group('contents.id')
-           .order('SUM(viewing_times.time_watched) DESC')
+           .group("contents.id")
+           .order("SUM(viewing_times.time_watched) DESC")
   end
 end

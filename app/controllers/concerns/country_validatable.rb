@@ -14,7 +14,7 @@ module CountryValidatable
 
   def render_invalid_country_error
     render json: {
-      error: 'Invalid country code',
+      error: "Invalid country code",
       available_countries: available_countries
     }, status: :bad_request
   end

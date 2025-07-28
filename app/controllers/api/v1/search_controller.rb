@@ -10,7 +10,7 @@ class Api::V1::SearchController < ApplicationController
     end
 
     unless query.present?
-      return render json: { error: 'Query parameter is required' }, status: :bad_request
+      return render json: { error: "Query parameter is required" }, status: :bad_request
     end
 
     results = SearchService.global_search(query, country_code)

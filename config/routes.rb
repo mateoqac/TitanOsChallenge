@@ -11,16 +11,16 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       # Contents endpoints
-      get 'contents', to: 'contents#index'
-      get 'contents/:id', to: 'contents#show'
+      get "contents", to: "contents#index"
+      get "contents/:id", to: "contents#show"
 
       # Search endpoint
-      get 'search', to: 'search#index'
+      get "search", to: "search#index"
 
       # Favorites endpoints
-      get 'favorites/channel_programs', to: 'favorites#channel_programs'
-      get 'favorites/apps', to: 'favorites#apps'
-      post 'favorites/apps', to: 'favorites#create_app_favorite'
+      get "favorites/channel_programs", to: "favorites#channel_programs"
+      get "favorites/apps", to: "favorites#apps"
+      post "favorites/apps", to: "favorites#create_app_favorite"
     end
   end
 end
