@@ -9,7 +9,7 @@ module CountryValidatable
   end
 
   def available_countries
-    Country.active.pluck(:code)
+    BaseService.available_countries
   end
 
   def render_invalid_country_error
