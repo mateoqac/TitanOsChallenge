@@ -1,34 +1,20 @@
 class Api::V1::FavoritesController < ApplicationController
   def channel_programs
-    user_id = params[:user_id]
-
-    unless user_id.present?
-      return render json: { error: "User ID is required" }, status: :bad_request
-    end
-
+    user_id = params.require(:user_id)
     favorites = FavoriteService.get_favorite_channel_programs(user_id)
     render json: favorites, scope: { user_id: user_id }
   end
 
   def apps
-    user_id = params[:user_id]
-
-    unless user_id.present?
-      return render json: { error: "User ID is required" }, status: :bad_request
-    end
-
+    user_id = params.require(:user_id)
     favorites = FavoriteService.get_favorite_apps(user_id)
     render json: favorites
   end
 
   def create_app_favorite
-    user_id = params[:user_id]
-    app_id = params[:app_id]
-    position = params[:position]
-
-    unless user_id.present? && app_id.present? && position.present?
-      return render json: { error: "User ID, App ID and Position are required" }, status: :bad_request
-    end
+    user_id = params.require(:user_id)
+    app_id = params.require(:app_id)
+    position = params.require(:position)
 
     begin
       result = FavoriteService.add_app_favorite(user_id, app_id, position)

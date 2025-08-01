@@ -2,7 +2,7 @@ class Api::V1::ContentsController < ApplicationController
   include CountryValidatable
 
   def index
-    country_code = params[:country]&.upcase
+    country_code = params.require(:country).upcase
 
     unless valid_country_code?(country_code)
       return render_invalid_country_error
