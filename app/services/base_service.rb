@@ -9,12 +9,12 @@ class BaseService
     end
 
     def validate_country_exists(country_code)
-      return [false, nil] if country_code.blank?
+      return [ false, nil ] if country_code.blank?
 
       country = find_country_by_code(country_code)
-      return [false, nil] unless country
+      return [ false, nil ] unless country
 
-      [true, country]
+      [ true, country ]
     end
   end
 end
