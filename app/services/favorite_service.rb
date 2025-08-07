@@ -9,9 +9,7 @@ class FavoriteService
                 .map(&:favoritable)
   end
 
-  def self.add_app_favorite(user_id, app_id, position)
-    app = StreamingApp.find(app_id)
-
+  def self.add_app_favorite(user_id, app, position)
     # Actualizar posiciones si es necesario
     update_positions_for_new_favorite(user_id, position)
 
@@ -22,12 +20,8 @@ class FavoriteService
     )
 
     favorite.position = position
-
-    if favorite.save
-      { success: true, favorite: favorite }
-    else
-      { success: false, errors: favorite.errors.full_messages }
-    end
+    favorite.save!
+    favorite
   end
 
   def self.update_app_position(user_id, app_id, position)

@@ -16,16 +16,20 @@ class Api::V1::FavoritesController < ApplicationController
     app_id = params.require(:app_id)
     position = params.require(:position)
 
-    begin
-      result = FavoriteService.add_app_favorite(user_id, app_id, position)
-    rescue ActiveRecord::RecordNotFound
-      return render json: { error: "App not found" }, status: :unprocessable_entity
-    end
+    app = StreamingApp.find_by(id: app_id)
 
-    if result[:success]
-      render json: result[:favorite]
+    return render json: { error: "App not found" }, status: :not_found unless app
+
+    favorite = FavoriteService.add_app_favorite(user_id, app, position)
+    if favorite
+      render json:  favorite
     else
-      render json: { error: result[:errors] }, status: :unprocessable_entity
+      render json: { error: favorite.errors } , status: :unprocessable_entity
     end
+    # begin
+
+    # rescue ActiveRecord::RecordNotFound
+    #   return render json: { error: "App not found" }, status: :unprocessable_entity
+    # end
   end
 end

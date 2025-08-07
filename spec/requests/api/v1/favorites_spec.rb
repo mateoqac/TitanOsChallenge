@@ -147,7 +147,7 @@ RSpec.describe "Api::V1::Favorites", type: :request do
           position: 1
         }
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:not_found)
         json_response = JSON.parse(response.body)
         expect(json_response).to include('error')
       end
