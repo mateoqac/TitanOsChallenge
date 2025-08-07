@@ -24,7 +24,7 @@ class Api::V1::FavoritesController < ApplicationController
     if favorite
       render json:  favorite
     else
-      render json: { error: favorite.errors } , status: :unprocessable_entity
+      render json: { error: favorite.errors }, status: :unprocessable_entity
     end
     # begin
 
